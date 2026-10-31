@@ -5,17 +5,31 @@ function App() {
   const [report, setReport] = useState(null);
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const [note, setNote] = useState("");
+  const [notes, setNotes] = useState([]);
   const [note, setNote] = useState("");
 const [notes, setNotes] = useState([]);
 
   async function searchDrug() {
+  if (!drug.trim()) return;
+
+  setLoading(true);
+
+  try {
     const response = await fetch(
-      `https://fastapi-python-boilerplate-theta-wheat.vercel.app/api/drug/${drug}`
+      `https://fastapi-python-boilerplate-theta-wheat.vercel.app/api/drug/${encodeURIComponent(drug.trim())}`
     );
 
     const data = await response.json();
     setReport(data);
+  } catch (error) {
+    console.error("Search failed:", error);
+  } finally {
+    setLoading(false);
   }
+}
   async function askQuestion() {
   const response = await fetch(
     `https://fastapi-python-boilerplate-theta-wheat.vercel.app/api/drug/${drug}/question?q=${question}`
@@ -115,7 +129,7 @@ const [notes, setNotes] = useState([]);
               fontWeight: "bold",
             }}
           >
-            Search
+            {loading ? "Analyzing..." : "Search"}
           </button>
         </div>
 
